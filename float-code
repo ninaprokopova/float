@@ -1,0 +1,204 @@
+let num = 7
+let n = toFloat(num.toString())
+console.log(num, '==', n)	
+console.log()	
+//код поиска двоичного представления числа
+function toFloat(num) {
+if (num == 'PositiveInfinity')
+	return '01111111011111111111111111111111'
+if (num == 'NegativeInfinity')
+	return '11111111011111111111111111111111'
+
+num = parseFloat(num)
+if (isNaN(num))
+	return 'NaN'
+
+let number = ''
+if (num >= 0)
+	number += '0'
+else {
+	number += '1'
+	num *= -1
+}
+
+num = num.toString(2)
+pDot = -1
+pOne = -1
+for (let i = 0; i < num.length; i++)
+	if (num[i] == '.'){
+		pDot = i
+		break
+	}
+if (pDot == -1)
+	pDot = num.length
+for (let i = 0; i < num.length; i++)
+	if (num[i] == '1'){
+		pOne = i
+		break
+	}
+// вычисление порядка мантиссы
+let cOrder
+if (pDot > pOne)
+	cOrder = pDot - pOne - 1
+else
+	cOrder =  pDot - pOne
+// перевод порядка мантиссы в двоичную запись по правилу
+cOrder += 127
+cOrder = cOrder.toString(2)
+while (cOrder.length < 8)
+	cOrder = '0' + cOrder
+number += cOrder
+// добавление кода мантиссы
+let cMantissa = ''
+for (i = pOne + 1; i < num.length; i++){
+	if (num[i] == '.')
+		continue
+	cMantissa += num[i]
+}  
+if (cMantissa.length > 23){
+	let cM = cMantissa.substring(0, 23)
+	cMantissa = cM
+}
+else {
+	while (cMantissa.length < 23)
+		cMantissa += '0'
+}
+number += cMantissa 
+return number
+}
+////////// сложение чисел
+let a = 17
+let b = 3
+let add = addFloat(a, b)
+console.log('Результат сложения: ', add[0], '==', add[1])
+
+function addFloat(z, x){
+let ifManEq = true
+a = z
+b = x
+z = toFloat(z)
+x = toFloat(x)
+console.log(a,'==', z)
+console.log(b, '==', x)
+let zAr = [z[0], z.substring(1,9), z.substring(9,32)]
+let xAr = [x[0], x.substring(1,9), x.substring(9,32)]
+zAr[2] = '1'+ zAr[2]
+xAr[2] = '1'+ xAr[2]
+if (zAr[1] != xAr[1]){
+	let zMan = zAr[1]
+	let xMan = xAr[1]
+	zMan = parseInt(zMan, 2) - 127;
+	xMan = parseInt(xMan, 2) - 127;
+	if (zMan > xMan){ // меняем x
+		let delta = zMan - xMan
+		xAr[1] = zAr[1]
+		let st = ''
+		for (let i = 0; i < delta; i++)
+			st += '0'
+		xAr[2] =  st + xAr[2]
+		xAr[2] = xAr[2].substring(0, 24)
+	}
+	else{
+		let delta = xMan - zMan
+		zAr[1] = xAr[1]
+		let st = ''
+		for (let i = 0; i < delta; i++)
+			st += '0'
+		zAr[2] =  st + zAr[2]
+		zAr[2] = zAr[2].substring(0, 24)
+	}
+}
+let res = [zAr[0], zAr[1], 0]
+res[2] = parseInt(zAr[2], 2) + parseInt(xAr[2], 2)
+res[2] = res[2].toString(2)
+let delta = res[2].length - 24
+if (delta >= 1){
+	res[1] = parseInt(res[1], 2) + delta
+	res[1] = res[1].toString(2)
+}
+res[2] = res[2].substring(1, 24)
+// преобразование числа
+let manOr = parseInt(res[1], 2) - 127
+let result = ''
+if (manOr >= 0)
+	result = '1' + res[2].substring(0, manOr) + '.' + res[2].substring(manOr, 23)
+else{
+	result = '0.'
+	for (let i = 0; i < manOr * (-1) - 1; i++)
+		result += '0'
+	result += res[2]
+}
+if (res[0] == 1)
+	result = '-' + result
+
+result = parseInt(result, 2)
+let resAr = [res[0] +' '+ res[1] + ' ' + res[2], result]
+
+return resAr
+}
+
+let c = 1000
+let d = 3
+let substraction = substractionFloat(c, d)
+console.log('Результат вычитания: ', substraction[0], '==', substraction[1])
+
+function substractionFloat(z, x){
+console.log()
+let ifManEq = true
+if (x > z){
+	let numb = z
+	z = x
+	x = numb
+}
+a = z
+b = x
+z = toFloat(z)
+x = toFloat(x)
+console.log(a,'==', z)
+console.log(b, '==', x)
+let zAr = [z[0], z.substring(1,9), z.substring(9,32)]
+let xAr = [x[0], x.substring(1,9), x.substring(9,32)]
+zAr[2] = '1'+ zAr[2]
+xAr[2] = '1'+ xAr[2]
+if (zAr[1] != xAr[1]){
+	let zMan = zAr[1]
+	let xMan = xAr[1]
+	zMan = parseInt(zMan, 2) - 127;
+	xMan = parseInt(xMan, 2) - 127;
+	 // меняем x
+	let delta = zMan - xMan
+	xAr[1] = zAr[1]
+	let st = ''
+	for (let i = 0; i < delta; i++)
+		st += '0'
+	xAr[2] =  st + xAr[2]
+	xAr[2] = xAr[2].substring(0, 24)
+}
+let res = [zAr[0], zAr[1], 0]
+res[2] = parseInt(zAr[2], 2) - parseInt(xAr[2], 2)
+res[2] = res[2].toString(2)
+let delta = 24 - res[2].length 
+if (delta >= 1){
+	res[1] = parseInt(res[1], 2) - delta
+	res[1] = res[1].toString(2)
+	for (let i = 0; i<delta; i++)
+		res[2] += '0'
+}
+res[2] = res[2].substring(1, 24)
+// преобразование числа
+let manOr = parseInt(res[1], 2) - 127
+let result = ''
+if (manOr >= 0)
+	result = '1' + res[2].substring(0, manOr) + '.' + res[2].substring(manOr, 23)
+else{
+	result = '0.'
+	for (let i = 0; i < manOr * (-1) - 1; i++)
+		result += '0'
+	result += res[2]
+}
+
+result = parseInt(result, 2)
+let resAr = [res[0] +' '+ res[1] + ' ' + res[2], result]
+
+return resAr
+}
