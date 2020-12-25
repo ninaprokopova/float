@@ -1,4 +1,4 @@
-let num = 7
+let num = 1.1752073649e-38
 let n = toFloat(num.toString())
 console.log(num, '==', n)	
 console.log()	
@@ -8,10 +8,16 @@ if (num == 'PositiveInfinity')
 	return '01111111011111111111111111111111'
 if (num == 'NegativeInfinity')
 	return '11111111011111111111111111111111'
-
 num = parseFloat(num)
 if (isNaN(num))
 	return 'NaN'
+if (num < 1.17549435082e-38){ //обработка денормализованного числа
+	let number = num.toString(2)
+	number = number.toString(2)
+	number = number.substring(119, 149)
+	return number
+}
+
 
 let number = ''
 if (num >= 0)
